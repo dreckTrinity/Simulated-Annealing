@@ -2,26 +2,25 @@ import numpy
 import random
 import matplotlib.pyplot as plt
 
-def simAnnealing(startTemp: int=20, 
-                 steps: int=200, 
-                 tempFunc = lambda x: .99*x, 
-                 cutoff: float = .1, 
-                 minTempDelta: int = .7, 
-                 maxTempDelta: int  = 1.3 ):
+def simAnnealing(startTemp: int=60, 
+                 steps: int=30, 
+                 tempFunc = lambda x: .90*x, 
+                 cutoff:float = .1, 
+                 minTempDelta: int = -10, 
+                 maxTempDelta: int  = 10 ):
 
     temp = startTemp
     currSol = random.randint(-8,40)
     currSolEnergy = funcForTesting(currSol)
-    xVals = []
-    yVals = []
+    solPoints = []
+    solEnergyPoints = []
 
     while temp > cutoff:
-        xVals.append(currSol)
-        yVals.append(currSolEnergy)
+        solPoints.append(currSol)
+        solEnergyPoints.append(currSolEnergy)
         for x in range(0,steps):
-            #print(f"On Step {x} at temp {temp}")
-            newSol = currSol * random.SystemRandom().random() * (maxTempDelta - minTempDelta) + minTempDelta
-            #sprint(f"New Guess of: {newSol}")
+            #print(f"==============\nOn Step {x}\nTemp: {temp}\nCurrent Sol: {currSol}\nCurrent Energy: {currSolEnergy}")
+            newSol = currSol +( random.SystemRandom().random() * (maxTempDelta - minTempDelta) + minTempDelta)
             newSolEnergy = funcForTesting(newSol)
             tempPhase = False
 
@@ -47,14 +46,13 @@ def simAnnealing(startTemp: int=20,
         if not tempPhase:
             temp = tempFunc(temp)
 
-    plt.plot(xVals,yVals)
+    plt.plot(range(0, len(solPoints)), solPoints)
+    plt.show()
     return currSol
 
 def funcForTesting(x: int):
-    return x**2
-    #return (x+4)**5 + x**4 + x**3 + 20
+    return x*(x+4)**5 + x**4 + x**3 + 20
 
 
 print(simAnnealing())
 
-#plt.show()
