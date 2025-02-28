@@ -1,11 +1,10 @@
 import random
 import numpy as np
-import scipy.misc as smp
 from PIL import Image
 
 def simAnnealing(initialState: int,
                  startTemp: int=30, 
-                 steps: int=100, 
+                 steps: int=10, 
                  tempFunc = lambda x: .98*x, 
                  cutoff:float = .001):
     
@@ -67,21 +66,50 @@ def tweakSol(problem):
 
 def energyFunc(problem):
     energy = 0
-    for i, _ in enumerate(problem):
+    for i, val in enumerate(problem):
+        print(f"On index: {i} with value: {val}")
+        # [1,3,5,6,4]
+        # E = 
+        diag = 0
+        while(diag + val < len(problem) +  1 or  val - diag > 1):#While i is in either the upper or lower bounds
 
-        # Logic for calculating energy, the encoding method gives horizontal and vertical for free.
-        if i == 0:
-            if problem[i+1] == problem[i] + 1 or problem[i+1] == problem[i] - 1 :
-                energy += 1
-        elif i == len(problem) -1:
-            if problem[i-1] == problem[i] + 1 or problem[i-1] == problem[i] - 1 :
-                energy += 1
-        else:
-            if problem[i+1] == problem[i] + 1 or problem[i+1] == problem[i] - 1 :
-                energy += 1
-        if problem[i-1] == problem[i] + 1 or problem[i-1] == problem[i] - 1 :
-                energy += 1
+            diagNegative = val - diag > 1
+            diagPositive = diag + val < len(problem) +  1
+            
+            print(f"Diag = {diag} | diagNegative = {diagNegative} | diagPositive = {diagPositive} | val = {val} | i = {i}")
+            
+            # Logic for calculating energy, the encoding method gives horizontal and vertical for free.
+            if i == 0:
 
+                if diagPositive and problem[i+1] == val + diag:
+                    print(f"Conflict detected at index {i} (diagPositive) with value {val + diag}")
+                    energy += 1
+                if diagNegative and problem[i+1] == val - diag:
+                    print(f"Conflict detected at index {i} (diagNegative) with value {val - diag}")
+                    energy += 1
+            elif i == len(problem) -1:
+                if diagPositive and problem[i-1] == val + diag:
+                    print(f"Conflict detected at index {i} (diagPositive) with value {val + diag}")
+                    energy += 1
+                if diagNegative and problem[i-1] + diag == val - diag:
+                    print(f"Conflict detected at index {i} (diagNegative) with value {val - diag}")
+                    energy +=1
+            else:
+                if diagPositive and problem[i+1] == val + diag:
+                    print(f"Conflict detected at index {i} (diagPositive) with value {val + diag}")
+                    energy += 1
+                if diagNegative and problem[i+1] == val - diag:
+                    print(f"Conflict detected at index {i} (diagNegative) with value {val - diag}")
+                    energy += 1
+                if diagPositive and problem[i-1] == val + diag:
+                    print(f"Conflict detected at index {i} (diagPositive) with value {val + diag}")
+                    energy += 1
+                if diagNegative and problem[i-1] + diag == val - diag:
+                    print(f"Conflict detected at index {i} (diagNegative) with value {val - diag}")
+                    energy +=1
+            
+            diag += 1
+    print (problem, energy)
     return energy
 
 def prettyItUp(res, size):
@@ -98,15 +126,16 @@ def prettyItUp(res, size):
 
 
 
-size = int(input())
-res = simAnnealing(randSol(size))
+# size = int(input())
+# res = simAnnealing(randSol(size))
 
 #This doesn't feel right... but works for larger problems without correcting params (i think?)
 #Works up to 100k
 #Might not solve 4X4 correctly
-while energyFunc(res) != 0:
-    res = simAnnealing(randSol(size))
-print(res)
-print(energyFunc(res))
+print(energyFunc([5,7,1,4,2,8,6,3]))
+# while energyFunc(res) != 0:
+#     res = simAnnealing(randSol(size))
+# print(res)
+# print(energyFunc(res))
 
-#prettyItUp( res, size)
+# prettyItUp( res, size)
